@@ -4,16 +4,6 @@
 #define OMP1 1
 #define OMP2 2
 
-int find_min(int* vec, int n)
-{
-    int min = vec[0];
-    for (int i = 1; i < n; i++) {
-        if (min >= vec[i])
-            min = vec[i];
-    }
-    return min;
-}
-
 int find_min_omp1(int* vec, int n)
 {
     int local_mins[MAX_THREADS];
@@ -75,19 +65,27 @@ double find_min_test(int n, int opt)
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
     struct bench_params params;
-    params.start_sz = 1000000;
-    params.step = 1000000;
-    params.num_steps = 4;
-    params.options = SEQ;
-    
-    bench(find_min_test, params);
-    params.options = OMP1;
-    bench(find_min_test, params);
-    //bench(find_min_test, params);
-    //bench(find_min_test, params);
+    params.start_sz = 500000;
+    params.step = 500000;
+    params.num_steps = 10;
 
+    params.options = SEQ;
+    strcpy(params.file_name, "out/find_min_data1");
+    strcpy(params.label, "find min seq");
+    bench(find_min_test, &params);
+
+    params.options = OMP1;
+    strcpy(params.file_name, "out/find_min_data2");
+    strcpy(params.label, "find min omp");
+    bench(find_min_test, &params);
+
+    params.options = OMP2;
+    strcpy(params.file_name, "out/find_min_data3");
+    strcpy(params.label, "find min reduction");
+    bench(find_min_test, &params);
+ 
     return 0;
 }

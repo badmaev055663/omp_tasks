@@ -50,16 +50,23 @@ double dot_product_test(int n, int opt)
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
     struct bench_params params;
-    params.start_sz = 10000;
-    params.step = 10000;
-    params.num_steps = 4;
-    params.options = SEQ;
-    
-    bench(dot_product_test, params);
+    params.start_sz = 200000;
+    params.step = 200000;
+    params.num_steps = 8;
 
+
+    strcpy(params.file_name, "out/dot_product_data1");
+    strcpy(params.label, "dot product seq");
+    params.options = SEQ;
+    bench(dot_product_test, &params);
+
+    strcpy(params.file_name, "out/dot_product_data2");
+    strcpy(params.label, "dot product omp");
+    params.options = OMP;
+    bench(dot_product_test, &params);
 
     return 0;
 }
