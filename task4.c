@@ -59,11 +59,11 @@ double find_max_min_test(int n, int opt)
 int main(int argc, char *argv[])
 {
     struct bench_params params;
-    params.start_sz = 200;
-    params.step = 200;
-    params.num_steps = 5;
+    params.start_sz = 500;
+    params.step = 500;
+    params.num_steps = 10;
 
-    params.options = SEQ;
+    /*params.options = SEQ;
     strcpy(params.file_name, "out/max_min_data1");
     strcpy(params.label, "max min seq");
     bench(find_max_min_test, &params);
@@ -71,7 +71,11 @@ int main(int argc, char *argv[])
     params.options = OMP;
     strcpy(params.file_name, "out/max_min_data2");
     strcpy(params.label, "max min omp");
-    bench(find_max_min_test, &params);
+    bench(find_max_min_test, &params);*/
+	params.options = OMP;
+    strcpy(params.file_name, "out/max_min_data");
+    strcpy(params.label, "max min omp");
+    thread_bench(find_max_min_test, &params);
 	
     return 0;
 }

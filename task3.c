@@ -76,11 +76,11 @@ double integrate_test(int n, int opt)
 int main(int argc, char *argv[])
 {
     struct bench_params params;
-    params.start_sz = 100000;
-    params.step = 100000;
-    params.num_steps = 6;
+    params.start_sz = 200000;
+    params.step = 200000;
+    params.num_steps = 10;
     
-    strcpy(params.file_name, "out/integral_data1");
+    /*strcpy(params.file_name, "out/integral_data1");
     strcpy(params.label, "integral seq");
     params.options = SEQ;
     bench(integrate_test, &params);
@@ -88,6 +88,11 @@ int main(int argc, char *argv[])
     strcpy(params.file_name, "out/integral_data2");
     strcpy(params.label, "integral omp");
     params.options = OMP;
-    bench(integrate_test, &params);
+    bench(integrate_test, &params);*/
+
+    strcpy(params.file_name, "out/integral_data");
+    strcpy(params.label, "integral omp");
+    params.options = OMP;
+    thread_bench(integrate_test, &params);
     return 0;
 }

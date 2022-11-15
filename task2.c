@@ -3,25 +3,6 @@
 #define SEQ 0
 #define OMP 1
 
-int dot_product(int *vec1, int *vec2, int n)
-{
-    int res = 0;
-    for (int i = 0; i < n; i++) {
-        res += vec1[i] * vec2[i];
-    }
-    return res;
-}
-
-int dot_product_omp(int *vec1, int *vec2, int n)
-{
-    int res = 0;
-    #pragma omp parallel for reduction(+:res)
-    for (int i = 0; i < n; i++) {    
-        res += vec1[i] * vec2[i];
-    }
-    return res;
-}
-
 /* test one of dot_product versions (fixed vector size) */
 double dot_product_test(int n, int opt)
 {
@@ -53,12 +34,12 @@ double dot_product_test(int n, int opt)
 int main(int argc, char *argv[])
 {
     struct bench_params params;
-    params.start_sz = 200000;
-    params.step = 200000;
-    params.num_steps = 8;
+    params.start_sz = 500000;
+    params.step = 500000;
+    params.num_steps = 10;
 
 
-    strcpy(params.file_name, "out/dot_product_data1");
+    /*strcpy(params.file_name, "out/dot_product_data1");
     strcpy(params.label, "dot product seq");
     params.options = SEQ;
     bench(dot_product_test, &params);
@@ -66,7 +47,12 @@ int main(int argc, char *argv[])
     strcpy(params.file_name, "out/dot_product_data2");
     strcpy(params.label, "dot product omp");
     params.options = OMP;
-    bench(dot_product_test, &params);
+    bench(dot_product_test, &params);*/
+    strcpy(params.file_name, "out/dot_product_data");
+    strcpy(params.label, "dot product omp");
+    params.options = OMP;
+    thread_bench(dot_product_test, &params);
+
 
     return 0;
 }

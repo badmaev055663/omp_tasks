@@ -19,24 +19,27 @@ def read_file_data(filepath):
 
 
 
-def plot_data(filepath1, filepath2):
-    label1, data_x1, data_y1 = read_file_data(filepath1)
-    label2, data_x2, data_y2 = read_file_data(filepath2)
-    plt.plot(data_x1, data_y1, label=label1)
-    plt.plot(data_x2, data_y2, label=label2)
-
+def plot_data(filepaths):
+    cnt = len(filepaths)
+    for i in range (cnt):
+        label, data_x, data_y = read_file_data(filepaths[i])
+        plt.plot(data_x, data_y, label=label)
+    
     plt.ylabel('wtime (ms)')
     plt.xlabel('n')
     plt.title("compare")
     plt.legend(loc='upper left')
     plt.show()
 
-if len(sys.argv) != 3:
+if len(sys.argv) < 2:
     print("wrong argument count")
     exit(1)
 
-# no further error handling
-filepath1 = sys.argv[1]
-filepath2 = sys.argv[2]
-plot_data(filepath1, filepath2)
+filepaths = []
+
+for i in range (len(sys.argv) - 1):
+    filepaths.append(sys.argv[i + 1])
+    
+
+plot_data(filepaths)
 
