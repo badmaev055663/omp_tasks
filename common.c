@@ -55,14 +55,24 @@ int dot_product_omp(int *vec1, int *vec2, int n)
     return res;
 }
 
-/* unsafe */
 int** alloc_sqr_mat(int n)
 {
     int **res = (int**)malloc(sizeof(int*) * n);
-    for (int i = 0; i < n; i++) {
+    int i;
+    if (!res)
+        return NULL;
+    for (i = 0; i < n; i++) {
         res[i] = (int*)malloc(sizeof(int) * n);
+        if (!res[i])
+            goto clean;
     }
     return res;
+
+clean:
+    for (int j = 0; j < i; j++)
+        free(res[j]);
+    free(res);
+    return NULL;
 }
 
 void free_sqr_mat(int **mat, int n)
