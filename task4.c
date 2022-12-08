@@ -55,13 +55,32 @@ double find_max_min_test(int n, int opt)
     return t / NUM_ITER;
 }
 
+double find_max_min_check(int n, int opt)
+{
+    int **mat = alloc_sqr_mat(n);
+
+	for (int i = 0; i < n; i++)
+		rand_fill_vec_int(mat[i], n);
+	
+    for (int i = 0; i < 5; i++) {
+		int res1 = find_max_min(mat, n);    	
+	    int res2 = find_max_min_omp(mat, n);
+		if (res1 != res2) {
+            printf("find max min check failed\n");
+            free_sqr_mat(mat, n);
+            return -1.0;
+        }
+	}
+    free_sqr_mat(mat, n);
+    return 0.0;
+}
 
 int main(int argc, char *argv[])
 {
     struct bench_params params;
     params.start_sz = 500;
     params.step = 500;
-    params.num_steps = 10;
+    params.num_steps = 8;
 
     /*params.options = SEQ;
     strcpy(params.file_name, "out/max_min_data1");
@@ -75,7 +94,8 @@ int main(int argc, char *argv[])
 	params.options = OMP;
     strcpy(params.file_name, "out/max_min_data");
     strcpy(params.label, "max min omp");
-    thread_bench(find_max_min_test, &params);
+    //thread_bench(find_max_min_test, &params);
+	thread_bench(find_max_min_check, &params);
 	
     return 0;
 }

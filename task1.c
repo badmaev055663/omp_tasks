@@ -42,12 +42,31 @@ double find_min_test(int n, int opt)
 }
 
 
+double find_min_check(int n, int opt)
+{
+    int *vec = (int*)malloc(sizeof(int) * n);
+
+    for (int i = 0; i < 5; i++) {
+        rand_fill_vec_int(vec, n);
+        int res1 = find_min(vec, n);
+        int res2 = find_min_omp(vec, n);
+        if (res1 != res2) {
+            printf("find min check failed\n");
+            free(vec);
+            return -1.0;
+        }
+    }
+    free(vec);
+    return 0.0;
+}
+
+
 int main(int argc, char *argv[])
 {
     struct bench_params params;
     params.start_sz = 500000;
     params.step = 500000;
-    params.num_steps = 10;
+    params.num_steps = 5;
 
     /*params.options = SEQ;
     strcpy(params.file_name, "out/find_min_data1");
@@ -62,7 +81,8 @@ int main(int argc, char *argv[])
     params.options = OMP;
     strcpy(params.file_name, "out/find_min_data");
     strcpy(params.label, "find min");
-    thread_bench(find_min_test, &params);
+    //thread_bench(find_min_test, &params);
+    thread_bench(find_min_check, &params);
  
     return 0;
 }

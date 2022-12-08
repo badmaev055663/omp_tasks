@@ -72,13 +72,27 @@ double integrate_test(int n, int opt)
     return t / NUM_ITER;
 }
 
+double integrate_check(int n, int opt)
+{
+    double eps = 0.001;
+    for (int i = 0; i < 5; i++) {
+        double res1 = integrate(test_f, a, b, n);
+        double res2 = integrate_omp(test_f, a, b, n);
+        if (fabs(res1 - res2) > eps) {
+            printf("integrate check failed\n");
+            return -1.0;
+        }
+    }
+    return 0.0;
+}
+
 
 int main(int argc, char *argv[])
 {
     struct bench_params params;
     params.start_sz = 200000;
     params.step = 200000;
-    params.num_steps = 10;
+    params.num_steps = 5;
     
     /*strcpy(params.file_name, "out/integral_data1");
     strcpy(params.label, "integral seq");
@@ -93,6 +107,7 @@ int main(int argc, char *argv[])
     strcpy(params.file_name, "out/integral_data");
     strcpy(params.label, "integral omp");
     params.options = OMP;
-    thread_bench(integrate_test, &params);
+    //thread_bench(integrate_test, &params);
+    thread_bench(integrate_check, &params);
     return 0;
 }

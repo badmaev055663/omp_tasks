@@ -43,22 +43,25 @@ int read_vectors(FILE *fp, int *vec1, int *vec2, int n)
 	fscanf(fp, "\n");
 }
 
-void file_test_seq(FILE *fp, int n)
+long file_test_seq(FILE *fp, int n)
 {
 	int vec1[VEC_SIZE];
     int vec2[VEC_SIZE];
+    long total = 0;
 	for (int i = 0; i < n / 2; i++) {
 		read_vectors(fp, vec1, vec2, VEC_SIZE);
 		int res = dot_product(vec1, vec2, VEC_SIZE);
+        total += res;
 	}
-
+    return total;
 }
 
-void file_test_omp(FILE *fp, int n)
+long file_test_omp(FILE *fp, int n)
 {
 	int vecs[4][VEC_SIZE];
     volatile int flag1 = 0;
     volatile int flag2 = 0;
+    long total = 0;
     for (int i = 0; i < n / 4; i++) {
         flag1 = flag2 = 0;
         #pragma omp sections
@@ -75,9 +78,11 @@ void file_test_omp(FILE *fp, int n)
 check1:
                 if (flag1) {
                     int res = dot_product(vecs[0], vecs[1], VEC_SIZE);
+                    total += res;
 check2:
                     if (flag2) {
                         res = dot_product(vecs[2], vecs[3], VEC_SIZE);
+                        total += res;
                     } else {
                         goto check2;
                     }
@@ -87,6 +92,7 @@ check2:
 	        }
         }
     }
+    return total;
 }
 
 
@@ -117,6 +123,22 @@ double file_test(int n, int opt)
 }
 
 
+double file_check(int n, int opt)
+{
+    create_data_file(file, VEC_SIZE, n);
+    FILE *fp = fopen(file, "r");
+    long res1 = file_test_seq(fp, n);
+    fclose(fp);
+    fp = fopen(file, "r");;
+	long res2 = file_test_omp(fp, n);   
+	fclose(fp);
+    if (res1 != res2) {
+        printf("file test check failed\n");
+        return -1.0;
+    }
+    return 0.0;
+}
+
 int main(int argc, char *argv[])
 {
     struct bench_params params;
@@ -137,7 +159,7 @@ int main(int argc, char *argv[])
     strcpy(params.file_name, "out/file_test");
     strcpy(params.label, "file test");
     params.options = OMP;
-    thread_bench(file_test, &params);
+    thread_bench(file_check, &params);
 
     return 0;
 }

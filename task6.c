@@ -79,13 +79,36 @@ double dot_product_test(int n, int opt)
     return t / NUM_ITER;
 }
 
+double dot_product_check(int n, int opt)
+{
+    int *vec1 = (int*)malloc(sizeof(int) * n);
+    int *vec2 = (int*)malloc(sizeof(int) * n);
+    for (int i = 0; i < 5; i++) {
+        rand_fill_vec_int(vec1, n);
+        rand_fill_vec_int(vec2, n);
+        int res1 = dot_product(vec1, vec2, n);
+        int res2 = dot_product_omp1(vec1, vec2, n);
+        int res3 = dot_product_omp2(vec1, vec2, n);  
+        int res4 = dot_product_omp3(vec1, vec2, n);
+        if (res2 != res1 || res3 != res1 || res4 != res1) {
+            printf("dot product check failed\n");
+            free(vec1);
+            free(vec2);
+            return -1.0;
+        }
+    }
+    free(vec1);
+    free(vec2);
+    return 0.0;
+}
+
 
 int main(int argc, char *argv[])
 {
     struct bench_params params;
-    params.start_sz = 200000;
-    params.step = 200000;
-    params.num_steps = 10;
+    params.start_sz = 100000;
+    params.step = 100000;
+    params.num_steps = 8;
 
     /*strcpy(params.file_name, "out/sync_cmp_data1");
     strcpy(params.label, "dot product critical");
@@ -109,7 +132,7 @@ int main(int argc, char *argv[])
     strcpy(params.file_name, "out/sync_cmp_data");
     strcpy(params.label, "dot product crit");
     params.options = OMP1;
-    thread_bench(dot_product_test, &params);
+    thread_bench(dot_product_check, &params);
 
     return 0;
 }

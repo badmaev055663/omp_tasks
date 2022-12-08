@@ -124,12 +124,64 @@ double mat_mult_test(int n, int opt)
 }
 
 
+int matrix_cmp(int **mat1, int **mat2, int n) {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (mat1[i][j] != mat2[i][j]) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+
+double mat_mult_check(int n, int opt)
+{
+    int **mat1 = alloc_sqr_mat(n);
+	int **mat2 = alloc_sqr_mat(n);
+	int **res = alloc_sqr_mat(n);
+	int **res1 = alloc_sqr_mat(n);
+	int **res2 = alloc_sqr_mat(n);
+	int **res3 = alloc_sqr_mat(n);
+	int **res4 = alloc_sqr_mat(n);
+	if (!mat1 || !mat2 || !res || !res1 || !res3 || !res4) {
+		printf("failed to allocate memory\n");
+		return 0.0;
+	}
+	for (int i = 0; i < n; i++) {
+		rand_fill_vec_int(mat1[i], n);
+		rand_fill_vec_int(mat2[i], n);
+	}
+	
+    for (int i = 0; i < 5; i++) {	
+	    sqr_mat_mult(mat1, mat2, res, n);
+	    sqr_mat_mult_omp1(mat1, mat2, res1, n); 	
+	    sqr_mat_mult_omp2(mat1, mat2, res2, n);
+	    sqr_mat_mult_omp3(mat1, mat2, res3, n);
+	    sqr_mat_mult_omp4(mat1, mat2, res4, n);
+		if (matrix_cmp(res, res1, n) || matrix_cmp(res, res2, n) ||
+			matrix_cmp(res, res3, n) || matrix_cmp(res, res4, n)) {
+			printf("mat mult check failed\n");
+			return -1.0;
+		}
+	}
+    free_sqr_mat(mat1, n);
+	free_sqr_mat(mat2, n);
+	free_sqr_mat(res, n);
+	free_sqr_mat(res1, n);
+	free_sqr_mat(res2, n);
+	free_sqr_mat(res3, n);
+	free_sqr_mat(res4, n);
+    return 0.0;
+}
+
 int main(int argc, char *argv[])
 {
     struct bench_params params;
-    params.start_sz = 100;
+    params.start_sz = 50;
     params.step = 50;
-    params.num_steps = 7;
+    params.num_steps = 6;
 
     omp_set_nested(1);
 
@@ -172,7 +224,7 @@ int main(int argc, char *argv[])
 	strcpy(params.file_name, "out/mat_mult_outer");
     strcpy(params.label, "mat mult outer");
     params.options = OMP1;
-    thread_bench(mat_mult_test, &params);
+    thread_bench(mat_mult_check, &params);
 
     return 0;
 }
